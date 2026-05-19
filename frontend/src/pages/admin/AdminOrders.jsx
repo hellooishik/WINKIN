@@ -11,6 +11,7 @@ const AdminOrders = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [smsModalOrder, setSmsModalOrder] = useState(null);
+    // set the things
 
     useEffect(() => {
         fetchOrders();
@@ -58,7 +59,7 @@ const AdminOrders = () => {
     return (
         <div className="container mx-auto px-4 py-8 relative">
             <h1 className="text-2xl font-bold mb-6">Orders</h1>
-            
+
             <div className="overflow-x-auto">
                 <table className="w-full border">
                     <thead className="bg-gray-50 border-b">
@@ -81,8 +82,8 @@ const AdminOrders = () => {
                                 <td className="p-3">£{(order.totalPrice || 0).toFixed(2)}</td>
                                 <td className="p-3">{order.isPaid ? 'Yes' : 'No'}</td>
                                 <td className="p-3">
-                                    <select 
-                                        value={order.status} 
+                                    <select
+                                        value={order.status}
                                         onChange={(e) => handleStatusChange(order._id, e.target.value)}
                                         className="border p-1 rounded"
                                     >
@@ -95,7 +96,7 @@ const AdminOrders = () => {
                                 </td>
                                 <td className="p-3 flex items-center gap-3">
                                     <Link to={`/order/${order._id}`} className="text-sm text-[#00ADEF] hover:underline">View</Link>
-                                    <button 
+                                    <button
                                         onClick={() => setSmsModalOrder(order)}
                                         className="flex items-center gap-1 text-sm text-green-600 hover:text-green-800 transition"
                                         title="SMS Notifications"
@@ -134,12 +135,12 @@ const AdminOrders = () => {
                                         <div>
                                             <p className="font-medium text-gray-800 text-sm">{smsType.label}</p>
                                             <p className={`text-xs mt-1 ${notifData.sent ? 'text-green-600' : 'text-gray-500'}`}>
-                                                {notifData.sent 
-                                                    ? `✅ Sent at ${new Date(notifData.timestamp).toLocaleString()}` 
+                                                {notifData.sent
+                                                    ? `✅ Sent at ${new Date(notifData.timestamp).toLocaleString()}`
                                                     : '❌ Not Sent Yet'}
                                             </p>
                                         </div>
-                                        <button 
+                                        <button
                                             onClick={() => resendSms(smsModalOrder._id, smsType.key)}
                                             className="flex items-center justify-center gap-1 bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-md text-xs font-medium transition"
                                         >
