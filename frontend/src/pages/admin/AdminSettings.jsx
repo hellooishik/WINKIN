@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from '../../api/axios';
 import AuthContext from '../../context/AuthContext';
-import { Save, Gift, Tag, AlertCircle, Truck } from 'lucide-react';
+import { Save, Gift, Tag, AlertCircle, Truck, Coins } from 'lucide-react';
 
 const AdminSettings = () => {
     const { user } = useContext(AuthContext);
@@ -9,6 +9,8 @@ const AdminSettings = () => {
     const [deliveryRate, setDeliveryRate] = useState('');
     const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState('');
     const [promotionalOffers, setPromotionalOffers] = useState('');
+    const [serviceFee, setServiceFee] = useState('');
+    const [bagCharges, setBagCharges] = useState('');
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [message, setMessage] = useState('');
@@ -22,6 +24,8 @@ const AdminSettings = () => {
                 setDeliveryRate(data.deliveryRate !== undefined ? data.deliveryRate : 5.99);
                 setFreeDeliveryThreshold(data.freeDeliveryThreshold !== undefined ? data.freeDeliveryThreshold : 50.00);
                 setPromotionalOffers(data.promotionalOffers ? data.promotionalOffers.join('\n') : '');
+                setServiceFee(data.serviceFee !== undefined ? data.serviceFee : 0);
+                setBagCharges(data.bagCharges !== undefined ? data.bagCharges : 0);
                 setLoading(false);
             } catch (err) {
                 setError('Failed to load settings');
@@ -42,7 +46,9 @@ const AdminSettings = () => {
                 giftPackingRate: Number(giftPackingRate),
                 deliveryRate: Number(deliveryRate),
                 freeDeliveryThreshold: Number(freeDeliveryThreshold),
-                promotionalOffers: offersArray
+                promotionalOffers: offersArray,
+                serviceFee: Number(serviceFee),
+                bagCharges: Number(bagCharges)
             }, config);
             
             setMessage('Settings updated successfully');
@@ -111,6 +117,42 @@ const AdminSettings = () => {
                                 required
                             />
                             <p className="text-sm text-gray-500 mt-2">Cart value required to waive delivery fee.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr className="border-gray-100" />
+
+                <div>
+                    <h2 className="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
+                        <Coins className="text-orange-500" /> Additional Charges
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-gray-700 font-medium mb-2">Service Fee (£)</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={serviceFee}
+                                onChange={(e) => setServiceFee(e.target.value)}
+                                className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00ADEF] transition-all"
+                                required
+                            />
+                            <p className="text-sm text-gray-500 mt-2">Applied to all orders automatically.</p>
+                        </div>
+                        
+                        <div>
+                            <label className="block text-gray-700 font-medium mb-2">Bag Charges (£)</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={bagCharges}
+                                onChange={(e) => setBagCharges(e.target.value)}
+                                className="w-full p-4 border border-gray-200 rounded-xl focus:outline-none focus:border-[#00ADEF] transition-all"
+                                required
+                            />
+                            <p className="text-sm text-gray-500 mt-2">Applied to all orders automatically.</p>
                         </div>
                     </div>
                 </div>

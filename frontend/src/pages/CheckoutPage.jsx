@@ -27,6 +27,8 @@ const CheckoutPage = () => {
     const [globalGiftPackingRate, setGlobalGiftPackingRate] = useState(2.00);
     const [globalDeliveryRate, setGlobalDeliveryRate] = useState(5.99);
     const [globalFreeDeliveryThreshold, setGlobalFreeDeliveryThreshold] = useState(50.00);
+    const [serviceFee, setServiceFee] = useState(0.00);
+    const [bagCharges, setBagCharges] = useState(0.00);
     
     const [couponCode, setCouponCode] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -59,6 +61,8 @@ const CheckoutPage = () => {
                 if (data.giftPackingRate !== undefined) setGlobalGiftPackingRate(data.giftPackingRate);
                 if (data.deliveryRate !== undefined) setGlobalDeliveryRate(data.deliveryRate);
                 if (data.freeDeliveryThreshold !== undefined) setGlobalFreeDeliveryThreshold(data.freeDeliveryThreshold);
+                if (data.serviceFee !== undefined) setServiceFee(data.serviceFee);
+                if (data.bagCharges !== undefined) setBagCharges(data.bagCharges);
             } catch (error) {
                 console.error("Failed to fetch settings", error);
             }
@@ -103,7 +107,7 @@ const CheckoutPage = () => {
     const giftFee = isGiftPacked ? globalGiftPackingRate : 0.00;
     const firstOrderDiscount = isFirstOrder ? 10.00 : 0.00;
     const couponDiscount = appliedCoupon ? appliedCoupon.discount : 0.00;
-    const computedTotal = (parseFloat(subtotal) + (deliveryFee === 0 ? 0 : parseFloat(deliveryFee)) + tipAmount + giftFee) - firstOrderDiscount - couponDiscount;
+    const computedTotal = (parseFloat(subtotal) + (deliveryFee === 0 ? 0 : parseFloat(deliveryFee)) + tipAmount + giftFee + serviceFee + bagCharges) - firstOrderDiscount - couponDiscount;
     const total = computedTotal > 0 ? computedTotal.toFixed(2) : '0.00';
 
     const submitHandler = async (e) => {
@@ -140,7 +144,9 @@ const CheckoutPage = () => {
                 taxPrice: 0,
                 deliveryInstruction,
                 tipAmount,
-                isGiftPacked
+                isGiftPacked,
+                serviceFee,
+                bagCharges
             };
 
             const { data } = await axios.post('/api/orders', orderPayload, config);
@@ -479,6 +485,18 @@ const CheckoutPage = () => {
                                                 }
                                             </div>
                                             
+                                            {serviceFee > 0 && (
+                                                <div className="flex justify-between items-center text-gray-500 font-semibold text-sm">
+                                                    <span>Service Fee</span>
+                                                    <span className="font-bold text-gray-800">£{serviceFee.toFixed(2)}</span>
+                                                </div>
+                                            )}
+                                            {bagCharges > 0 && (
+                                                <div className="flex justify-between items-center text-gray-500 font-semibold text-sm">
+                                                    <span>Bag Charges</span>
+                                                    <span className="font-bold text-gray-800">£{bagCharges.toFixed(2)}</span>
+                                                </div>
+                                            )}
                                             {isGiftPacked && (
                                                 <div className="flex justify-between items-center text-gray-500 font-semibold text-sm">
                                                     <span className="flex items-center gap-1.5"><Gift size={14} className="text-pink-500"/> Gift Packing</span>

@@ -13,6 +13,8 @@ const CartPage = () => {
     const [globalGiftPackingRate, setGlobalGiftPackingRate] = useState(2.00);
     const [globalDeliveryRate, setGlobalDeliveryRate] = useState(5.99);
     const [globalFreeDeliveryThreshold, setGlobalFreeDeliveryThreshold] = useState(50.00);
+    const [serviceFee, setServiceFee] = useState(0.00);
+    const [bagCharges, setBagCharges] = useState(0.00);
 
     useEffect(() => {
         const fetchSettings = async () => {
@@ -27,6 +29,12 @@ const CartPage = () => {
                 if (data.freeDeliveryThreshold !== undefined) {
                     setGlobalFreeDeliveryThreshold(data.freeDeliveryThreshold);
                 }
+                if (data.serviceFee !== undefined) {
+                    setServiceFee(data.serviceFee);
+                }
+                if (data.bagCharges !== undefined) {
+                    setBagCharges(data.bagCharges);
+                }
             } catch (error) {
                 console.error("Failed to fetch settings", error);
             }
@@ -38,7 +46,7 @@ const CartPage = () => {
     const subtotal = cartItems.reduce((acc, item) => acc + item.qty * item.price, 0).toFixed(2);
     const deliveryFee = subtotal > globalFreeDeliveryThreshold ? 0.00 : globalDeliveryRate;
     const giftFee = isGiftPacked ? globalGiftPackingRate : 0.00;
-    const total = (parseFloat(subtotal) + (deliveryFee === 'Free' ? 0 : parseFloat(deliveryFee)) + giftFee).toFixed(2);
+    const total = (parseFloat(subtotal) + (deliveryFee === 'Free' ? 0 : parseFloat(deliveryFee)) + giftFee + serviceFee + bagCharges).toFixed(2);
 
     const checkoutHandler = () => {
         if (!user) {
@@ -146,6 +154,18 @@ const CartPage = () => {
                                             : <span className="font-bold text-gray-800 text-base">£{deliveryFee.toFixed(2)}</span>
                                         }
                                     </div>
+                                    {serviceFee > 0 && (
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span>Service Fee</span>
+                                            <span className="font-bold text-gray-800 text-base">£{serviceFee.toFixed(2)}</span>
+                                        </div>
+                                    )}
+                                    {bagCharges > 0 && (
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span>Bag Charges</span>
+                                            <span className="font-bold text-gray-800 text-base">£{bagCharges.toFixed(2)}</span>
+                                        </div>
+                                    )}
                                     {isGiftPacked && (
                                         <div className="flex justify-between items-center text-sm">
                                             <span className="flex items-center gap-1.5"><Gift size={16} className="text-pink-500"/> Gift Packing</span>

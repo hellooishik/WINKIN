@@ -44,6 +44,14 @@ const orderSchema = mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        serviceFee: {
+            type: Number,
+            default: 0.0,
+        },
+        bagCharges: {
+            type: Number,
+            default: 0.0,
+        },
         paymentResult: {
             id: { type: String },
             status: { type: String },

@@ -22,6 +22,16 @@ const settingsSchema = mongoose.Schema(
             required: true,
             default: ['£10 OFF Your First Order!', 'Spend £20 Get Free Milk!'],
         },
+        serviceFee: {
+            type: Number,
+            required: true,
+            default: 0.00,
+        },
+        bagCharges: {
+            type: Number,
+            required: true,
+            default: 0.00,
+        },
     },
     {
         timestamps: true,
