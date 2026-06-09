@@ -273,18 +273,14 @@ const OrderDetails = () => {
                                     <span>£2.00</span>
                                 </div>
                             )}
-                            {order.serviceFee > 0 && (
-                                <div className="flex justify-between">
-                                    <span>Service Fee</span>
-                                    <span>£{(order.serviceFee || 0).toFixed(2)}</span>
-                                </div>
-                            )}
-                            {order.bagCharges > 0 && (
-                                <div className="flex justify-between">
-                                    <span>Bag Charges</span>
-                                    <span>£{(order.bagCharges || 0).toFixed(2)}</span>
-                                </div>
-                            )}
+                            <div className="flex justify-between">
+                                <span>Service Fee</span>
+                                <span>£{(order.serviceFee || 0).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span>Bag Charges</span>
+                                <span>£{(order.bagCharges || 0).toFixed(2)}</span>
+                            </div>
                             {order.tipAmount > 0 && (
                                 <div className="flex justify-between">
                                     <span>Tip</span>

@@ -152,20 +152,14 @@ const CartPage = () => {
                                         {deliveryFee === 0 
                                             ? <span className="font-black text-green-600 bg-green-100 px-2 py-0.5 rounded uppercase tracking-wider text-xs">Free</span>
                                             : <span className="font-bold text-gray-800 text-base">£{deliveryFee.toFixed(2)}</span>
-                                        }
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span>Service Fee</span>
+                                        <span className="font-bold text-gray-800 text-base">£{serviceFee.toFixed(2)}</span>
                                     </div>
-                                    {serviceFee > 0 && (
-                                        <div className="flex justify-between items-center text-sm">
-                                            <span>Service Fee</span>
-                                            <span className="font-bold text-gray-800 text-base">£{serviceFee.toFixed(2)}</span>
-                                        </div>
-                                    )}
-                                    {bagCharges > 0 && (
-                                        <div className="flex justify-between items-center text-sm">
-                                            <span>Bag Charges</span>
-                                            <span className="font-bold text-gray-800 text-base">£{bagCharges.toFixed(2)}</span>
-                                        </div>
-                                    )}
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span>Bag Charges</span>
+                                        <span className="font-bold text-gray-800 text-base">£{bagCharges.toFixed(2)}</span>
+                                    </div>
                                     {isGiftPacked && (
                                         <div className="flex justify-between items-center text-sm">
                                             <span className="flex items-center gap-1.5"><Gift size={16} className="text-pink-500"/> Gift Packing</span>
