@@ -8,8 +8,17 @@ const MAX_RETRIES = 3;
  * Send SMS using The SMS Works (or fallback to Mock)
  */
 const sendSmsViaProvider = async (settings, phone, body) => {
+    // Format phone number to E.164
+    let formattedPhone = (phone || '').replace(/[\s\-()]/g, '');
+    if (formattedPhone.startsWith('0')) {
+        formattedPhone = '+44' + formattedPhone.substring(1);
+    } else if (!formattedPhone.startsWith('+') && formattedPhone.length > 0) {
+        if (formattedPhone.startsWith('44')) formattedPhone = '+' + formattedPhone;
+        else formattedPhone = '+44' + formattedPhone;
+    }
+
     if (settings.provider === 'Mock' || (!settings.apiKey && settings.provider !== 'Twilio')) {
-        console.log(`[SMS MOCK] Sending to ${phone}: "${body}" (Sender: ${settings.senderId})`);
+        console.log(`[SMS MOCK] Sending to ${formattedPhone}: "${body}" (Sender: ${settings.senderId})`);
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 500));
         return { success: true, message: 'Mock sent successfully' };
@@ -25,7 +34,7 @@ const sendSmsViaProvider = async (settings, phone, body) => {
                 },
                 body: JSON.stringify({
                     sender: settings.senderId,
-                    destination: phone,
+                    destination: formattedPhone,
                     content: body
                 })
             });
@@ -53,7 +62,7 @@ const sendSmsViaProvider = async (settings, phone, body) => {
                 body: new URLSearchParams({
                     api_key: settings.apiKey,
                     api_secret: settings.apiSecret,
-                    to: phone,
+                    to: formattedPhone,
                     from: settings.senderId,
                     text: body
                 }).toString()
@@ -84,7 +93,7 @@ const sendSmsViaProvider = async (settings, phone, body) => {
             const response = await client.messages.create({
                 body: body,
                 from: fromPhone,
-                to: phone
+                to: formattedPhone
             });
 
             return { success: true, data: response };
@@ -94,7 +103,7 @@ const sendSmsViaProvider = async (settings, phone, body) => {
     }
 
     // Default to mock if provider not fully implemented
-    console.log(`[SMS MOCK Fallback] Sending to ${phone}: "${body}"`);
+    console.log(`[SMS MOCK Fallback] Sending to ${formattedPhone}: "${body}"`);
     return { success: true, message: 'Mock fallback sent successfully' };
 };
 

@@ -73,13 +73,22 @@ const sendSMS = async (phone, message) => {
         return;
     }
 
-    if (!isValidPhoneNumber(phone)) {
-        console.error(`[SMS Service] Invalid phone number format: ${phone}. Must be E.164 format.`);
+    // Format phone number to E.164
+    let formattedPhone = phone.replace(/[\s\-()]/g, '');
+    if (formattedPhone.startsWith('0')) {
+        formattedPhone = '+44' + formattedPhone.substring(1);
+    } else if (!formattedPhone.startsWith('+')) {
+        if (formattedPhone.startsWith('44')) formattedPhone = '+' + formattedPhone;
+        else formattedPhone = '+44' + formattedPhone;
+    }
+
+    if (!isValidPhoneNumber(formattedPhone)) {
+        console.error(`[SMS Service] Invalid phone number format: ${formattedPhone}. Must be E.164 format. Original: ${phone}`);
         return;
     }
 
     // Add to queue
-    smsQueue.push({ phone, message, retryCount: 0, maxRetries: 3 });
+    smsQueue.push({ phone: formattedPhone, message, retryCount: 0, maxRetries: 3 });
     
     // Trigger queue processing asynchronously
     processQueue();
