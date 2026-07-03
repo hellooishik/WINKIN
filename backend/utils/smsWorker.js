@@ -1,5 +1,6 @@
 const SmsLog = require('../models/smsLogModel');
 const SmsSettings = require('../models/smsSettingsModel');
+const { getTwilioClient, getTwilioPhoneNumber } = require('../services/twilioService');
 
 const MAX_RETRIES = 3;
 
@@ -7,7 +8,7 @@ const MAX_RETRIES = 3;
  * Send SMS using The SMS Works (or fallback to Mock)
  */
 const sendSmsViaProvider = async (settings, phone, body) => {
-    if (settings.provider === 'Mock' || !settings.apiKey) {
+    if (settings.provider === 'Mock' || (!settings.apiKey && settings.provider !== 'Twilio')) {
         console.log(`[SMS MOCK] Sending to ${phone}: "${body}" (Sender: ${settings.senderId})`);
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -65,6 +66,28 @@ const sendSmsViaProvider = async (settings, phone, body) => {
             } else {
                 return { success: false, error: data.messages ? data.messages[0]['error-text'] : 'Unknown error from Vonage' };
             }
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    // Twilio support
+    if (settings.provider === 'Twilio') {
+        try {
+            const client = getTwilioClient();
+            const fromPhone = getTwilioPhoneNumber();
+
+            if (!client || !fromPhone) {
+                return { success: false, error: 'Twilio client not initialized or missing phone number' };
+            }
+
+            const response = await client.messages.create({
+                body: body,
+                from: fromPhone,
+                to: phone
+            });
+
+            return { success: true, data: response };
         } catch (error) {
             return { success: false, error: error.message };
         }
