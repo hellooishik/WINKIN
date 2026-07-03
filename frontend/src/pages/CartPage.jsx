@@ -151,7 +151,8 @@ const CartPage = () => {
                                         <span>Delivery Fee</span>
                                         {deliveryFee === 0 
                                             ? <span className="font-black text-green-600 bg-green-100 px-2 py-0.5 rounded uppercase tracking-wider text-xs">Free</span>
-                                            : <span className="font-bold text-gray-800 text-base">£{deliveryFee.toFixed(2)}</span>
+                                            : <span className="font-bold text-gray-800 text-base">£{deliveryFee.toFixed(2)}</span>}
+                                    </div>
                                     <div className="flex justify-between items-center text-sm">
                                         <span>Service Fee</span>
                                         <span className="font-bold text-gray-800 text-base">£{serviceFee.toFixed(2)}</span>
