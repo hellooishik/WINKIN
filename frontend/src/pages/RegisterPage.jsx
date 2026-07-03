@@ -4,6 +4,7 @@ import AuthContext from '../context/AuthContext';
 
 const Register = () => {
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState(null);
@@ -27,7 +28,7 @@ const Register = () => {
             setMessage('Passwords do not match');
         } else {
             try {
-                await register(email, password);
+                await register(email, password, phone);
                 navigate(redirect);
             } catch (err) {
                 console.error('Register error:', err);
@@ -69,6 +70,17 @@ const Register = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-3 bg-white border-4 border-black rounded-xl focus:outline-none focus:ring-4 focus:ring-[#FFD100] text-lg font-bold shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]"
                             placeholder="Enter your email"
+                            required
+                        />
+                    </div>
+                    <div className="bg-black/10 p-4 rounded-2xl border-2 border-white/20 mb-4 text-black">
+                        <label className="block text-white font-black mb-2 text-sm uppercase tracking-widest" style={{ textShadow: '1px 1px 0 #003B18' }}>Telegraph (Phone)</label>
+                        <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="w-full px-4 py-3 bg-white border-4 border-black rounded-xl focus:outline-none focus:ring-4 focus:ring-[#FFD100] text-lg font-bold shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]"
+                            placeholder="Enter your phone number"
                             required
                         />
                     </div>
