@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import CartContext from '../context/CartContext';
@@ -28,6 +28,29 @@ const HomePage = () => {
     const navigate = useNavigate();
     const { addToCart } = useContext(CartContext);
     const { user } = useContext(AuthContext);
+
+    const categoryScrollRef = useRef(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    const startDragging = (e) => {
+        setIsDragging(true);
+        setStartX(e.pageX - categoryScrollRef.current.offsetLeft);
+        setScrollLeft(categoryScrollRef.current.scrollLeft);
+    };
+
+    const stopDragging = () => {
+        setIsDragging(false);
+    };
+
+    const onDragging = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - categoryScrollRef.current.offsetLeft;
+        const walk = (x - startX) * 2;
+        categoryScrollRef.current.scrollLeft = scrollLeft - walk;
+    };
 
     const handleAddToCart = (e, product) => {
         e.preventDefault();
@@ -227,7 +250,12 @@ const HomePage = () => {
                         <span className="bg-gray-100 text-gray-400 text-xs px-2 py-1 rounded-full font-bold tracking-widest hidden md:inline-block">SWIPE &rarr;</span>
                     </h2>
                     <div 
-                        className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-8 pb-4"
+                        ref={categoryScrollRef}
+                        onMouseDown={startDragging}
+                        onMouseLeave={stopDragging}
+                        onMouseUp={stopDragging}
+                        onMouseMove={onDragging}
+                        className={`flex overflow-x-auto gap-4 md:gap-8 pb-4 ${isDragging ? 'cursor-grabbing' : 'cursor-grab snap-x snap-mandatory'}`}
                         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                     >
                         {/* Hide scrollbar trick for webkit */}

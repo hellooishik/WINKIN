@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import axios from '../api/axios';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import CartContext from '../context/CartContext';
+import AuthContext from '../context/AuthContext';
+import Swal from 'sweetalert2';
 
 const SearchPage = () => {
     const [products, setProducts] = useState([]);
@@ -11,6 +15,19 @@ const SearchPage = () => {
     const searchParams = new URLSearchParams(location.search);
     const keyword = searchParams.get('keyword');
     const category = searchParams.get('category');
+    const { addToCart } = useContext(CartContext);
+    const { user } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleAddToCart = (e, product) => {
+        e.preventDefault();
+        if (!user) {
+            Swal.fire({ title: 'Authentication Required', text: 'Please sign in before adding items to the cart.', icon: 'warning', confirmButtonColor: '#3B6E1A' });
+            navigate('/login');
+            return;
+        }
+        addToCart(product, 1);
+    };
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -54,32 +71,27 @@ const SearchPage = () => {
                 ) : (
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                         {products.map((product) => (
-                            <div key={product._id} className="group relative">
-                                <div className="aspect-square bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-lg transition">
-                                    <Link to={`/product/${product._id}`} className="block h-full w-full p-4">
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            className="w-full h-full object-contain group-hover:scale-105 transition duration-300"
-                                        />
-                                    </Link>
-                                    <button className="absolute bottom-3 right-3 bg-[#00ADEF] text-white p-2 rounded-full shadow opacity-0 group-hover:opacity-100 transition translate-y-2 group-hover:translate-y-0">
-                                        <span className="text-xl">+</span>
-                                    </button>
-                                </div>
-                                <div className="mt-3">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <h3 className="font-bold text-gray-900 leading-tight">
-                                                <Link to={`/product/${product._id}`}>{product.name}</Link>
-                                            </h3>
-                                            <p className="text-sm text-gray-500 mt-1">{product.brand}</p>
-                                        </div>
-                                        <span className="font-bold text-gray-900">£{product.price}</span>
+                            <div key={product._id} className="bg-white rounded-2xl overflow-hidden border-2 border-gray-100 shadow-sm flex flex-col group hover:-translate-y-1 hover:shadow-md hover:border-[#3B6E1A]/30 transition-all duration-300">
+                                <Link to={`/product/${product._id}`} className="block relative aspect-square p-3 bg-white border-b border-gray-50">
+                                    <img src={product.image} alt={product.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition duration-300" />
+                                </Link>
+                                <div className="p-3 md:p-4 flex flex-col flex-grow text-left">
+                                    <div className="flex-grow">
+                                        <h3 className="font-bold text-gray-800 text-sm md:text-base leading-tight mb-1 line-clamp-2">
+                                            <Link to={`/product/${product._id}`}>{product.name}</Link>
+                                        </h3>
+                                        <p className="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-wider">{product.brand}</p>
                                     </div>
-                                    {product.countInStock <= 0 && (
-                                        <div className="mt-2 text-xs font-bold text-red-500 uppercase">Out of Stock</div>
-                                    )}
+                                    <div className="mt-3 flex justify-between items-center">
+                                        <span className="font-black text-lg md:text-xl text-[#3B6E1A]">£{product.price.toFixed(2)}</span>
+                                        {product.countInStock > 0 ? (
+                                            <button onClick={(e) => handleAddToCart(e, product)} className="bg-[#D91C2A] text-white w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center font-black text-xl border-2 border-transparent hover:scale-105 active:scale-95 transition-all shadow-sm">
+                                                +
+                                            </button>
+                                        ) : (
+                                            <span className="text-xs font-bold text-red-500 uppercase">Out of Stock</span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
